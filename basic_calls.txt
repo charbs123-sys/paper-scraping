@@ -1,0 +1,45 @@
+url = 'http://export.arxiv.org/api/query?search_query=all:electron&start=0&max_results=1'
+#data = urllib.request.urlopen(url)
+#print(data.read().decode('utf-8'))
+
+
+
+
+'http://export.arxiv.org/api/{method_name}?{parameters}'
+
+#Where method_name = query we have the parameters search_query, id_list, start and max_results which can be seperated using &
+#implement 3 second delay between each call
+#Can use sortBy (relevance, lastUpdatedDate or submittedDate)
+#sortOrder (ascending or descending)
+
+#FEED METADATA
+#Consists of <feed> element (metadata) and child <entry> elements. 
+#<title> is the title of the feed, 
+#<id> is unique and useful as a feed reader (want to keep track of feeds requested in the past)
+#<link> is a url to retrieve this feed again
+#<updated> containts last time contents in the feed were updated - updates only occur at midnight meaning we do not need to call the API for the same url multiple times
+
+#http://a9.com/-/spec/opensearch/1.1/
+#Can use OpenSearch to gather more information such as - totalResults, startIndex and itemsPerPage
+
+#No errors means <feed> has 0 or more <entry> elements each representing an article in the returned results set. 
+#If there is an error a single <entry> containing the error is returned
+
+#ENTRY METADATA
+#<title> contains title of article
+#<id> url resolving to abtract page for the article - can get arxiv id by removing the leading http://arxiv.org/abs/
+#<published> first version the article was submitted and processed
+#<updated> date on which article was submitted and processed
+#<summary> abstract of article
+#<author> author of article
+#<category> classifies as arXiv, ACM or MSC, has two attributes scheme (categorization scheme) and term (term used in categorization)
+#<link> occurs 3 times distinguished by rel and title attributes, these occur in different flavours
+
+#Some extension elements
+#Can get arxiv primary classification
+#comment - to get author comments
+#affiliation - affiliation information
+#journal_ref - journal reference
+#DOI - if doi provided
+
+#note that we can further dwelve into different fields of an article for search up, for example titles of an article can be searched. 
