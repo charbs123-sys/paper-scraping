@@ -78,5 +78,9 @@ def article_in_mongodb(doi, collection):
     article = collection.find_one({'doi':doi})
     return article is not None
 
+def title_in_mongod (title, collection):
+    article = collection.find_one({'title': title})
+    return article is None
+
 def push_to_db(doc, collection):
     collection.insert_many(doc)
