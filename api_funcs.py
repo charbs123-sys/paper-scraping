@@ -22,20 +22,36 @@ def entry_metadata (data, entry_data):
     to be imported into a mongodb database
     '''
     base = data
-    index = 0
-    if 'arxiv_doi' not in base:
+    
+    if entry_data[0] not in base:
         doi = None
     else:
-        doi = base[entry_data[index]]
-    index += 1
+        doi = base[entry_data[0]]
     
-    title = base[entry_data[index]].lower()
+    if entry_data[1] not in base:
+        title = None
+    else:
+        title = base[entry_data[1]].lower()
+
+    if entry_data[2] not in base:
+        summary = None
+    else:
+        summary = base[entry_data[2]].lower()
+        summary = re.sub("\n", " ", summary)
+
+    if entry_data[3] not in base:
+        authors = None
+    else:
+        authors = base[entry_data[3]]  # to normalize later
+        authors = [nam.name.lower() for nam in authors]
+
+    """     title = base[entry_data[index]].lower()
     index += 1
     summary = base[entry_data[index]].lower()
     summary = re.sub("\n"," ", summary)
     index += 1
     authors = base[entry_data[index]] #to normalize later
-    authors = [nam.name.lower() for nam in authors]
+    authors = [nam.name.lower() for nam in authors] """
 
     mong = {
         "doi" : doi,
