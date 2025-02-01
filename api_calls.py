@@ -44,7 +44,7 @@ for start in tqdm.tqdm(range(0, TOTAL_RESULTS, BATCH_SIZE)):
     arr_docs = []
 
     for data in data.entries:
-        if article_in_mongodb(data['arxiv_doi'], collection):
+        if 'arxiv_doi' in data and article_in_mongodb(data['arxiv_doi'], collection):
                 print('entered continue')
                 continue
         doc = entry_metadata(data, entry_data)
