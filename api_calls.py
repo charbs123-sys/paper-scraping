@@ -6,7 +6,7 @@ import tqdm
 
 BASE_URL = 'http://export.arxiv.org/api/query?search_query=all:Machine%20Learning'
 TOTAL_RESULTS = 300000
-BATCH_SIZE = 1000
+BATCH_SIZE = 2000
 #Connect to client
 client = MongoClient("mongodb://localhost:27017/")
 db = client["Arxiv"]
@@ -37,16 +37,27 @@ BASE_URL_1 = 'http://export.arxiv.org/api/query?search_query=all:'
 Retrieve batch of articles, retrieve embeddings for db,
 push to db in dictionary format.
 '''
-for start in tqdm.tqdm(range(0, TOTAL_RESULTS, BATCH_SIZE)):
+url = BASE_URL + f'&start={0}&max_results={1}'
+data = feedparser.parse(url)
+total = data.feed["opensearch_totalresults"]
+
+
+
+for start in tqdm.tqdm(range(0, int(total), BATCH_SIZE)):
     url = BASE_URL + f'&start={start}&max_results={BATCH_SIZE}'
     data = feedparser.parse(url)
     entry_data = ['arxiv_doi', 'title', 'summary','authors']
     arr_docs = []
 
     for data in data.entries:
-        if article_in_mongodb(data['arxiv_doi'], collection):
+        if 'arxiv_doi' in data and article_in_mongodb(data['arxiv_doi'], collection):
                 print('entered continue')
                 continue
+        
+        """ if 'title' in data and title_in_mongod(data['title'], collection):
+             print('entered title')
+             continue """
+        
         doc = entry_metadata(data, entry_data)
         summary_embeddings(doc, model)
         title_embeddings(doc, model)
