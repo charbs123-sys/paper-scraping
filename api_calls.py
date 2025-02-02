@@ -42,7 +42,6 @@ data = feedparser.parse(url)
 total = data.feed["opensearch_totalresults"]
 
 
-
 for start in tqdm.tqdm(range(0, int(total), BATCH_SIZE)):
     url = BASE_URL + f'&start={start}&max_results={BATCH_SIZE}'
     data = feedparser.parse(url)
@@ -51,20 +50,19 @@ for start in tqdm.tqdm(range(0, int(total), BATCH_SIZE)):
 
     for data in data.entries:
         if 'arxiv_doi' in data and article_in_mongodb(data['arxiv_doi'], collection):
+                print(data['arxiv_doi'])
                 print('entered continue')
                 continue
-        
-        """ if 'title' in data and title_in_mongod(data['title'], collection):
+        if 'title' in data and title_in_mongod(data['title'], collection):
              print('entered title')
-             continue """
-        
+             continue
         doc = entry_metadata(data, entry_data)
         summary_embeddings(doc, model)
         title_embeddings(doc, model)
         arr_docs.append(doc)
     if arr_docs:
         push_to_db(arr_docs, collection)
-    
+    remove_duplicates()
     time.sleep(3)
 
 if __name__ == '__main__':
