@@ -1,1 +1,6 @@
 __pycache__
+summary.npy
+original.npy
+tfidf_vectorized.pkl
+tfidf.pkl
+fine_tuned
