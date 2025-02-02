@@ -80,7 +80,42 @@ def article_in_mongodb(doi, collection):
 
 def title_in_mongod (title, collection):
     article = collection.find_one({'title': title})
-    return article is None
+    return article is not None
 
 def push_to_db(doc, collection):
     collection.insert_many(doc)
+
+def remove_duplicates():
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["Arxiv"]
+    collection = db["Arxiv Papers"]
+
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$title",  # Group by the title field
+                "ids": { "$push": "$_id" },  # Collect all document IDs for each title
+                "count": { "$sum": 1 }  # Count the number of occurrences
+            }
+        },
+        {
+            "$match": {
+                "count": { "$gt": 1 }  # Filter titles that appear more than once
+            }
+        }
+    ]
+
+    duplicates = collection.aggregate(pipeline)
+
+    for duplicate in duplicates:
+        title = duplicate["_id"]
+        ids = duplicate["ids"]  # List of document IDs for this title
+        # Keep the first document and delete the rest
+        keep_id = ids[0]  # Keep the first occurrence
+        delete_ids = ids[1:]  # IDs to delete
+        # Delete duplicate documents
+        if delete_ids:
+            collection.delete_many({"_id": {"$in": delete_ids}})
+            print(f"Removed {len(delete_ids)} duplicates for title: {title}")
+
+    print("Duplicate removal complete!")
