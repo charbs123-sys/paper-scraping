@@ -41,7 +41,7 @@ class API():
         self.BATCH_SIZE = 2000
 
     def connect_db(self):
-        client = MongoClient("mongodb+srv://AngryBeaver:BanterBeaver007@paperstorage.k3qm4.mongodb.net/")
+        client = MongoClient("mongodb://localhost:27017/")
         db = client["Arxiv"]
         self.collection = db["Arxiv Papers"]
     
