@@ -4,3 +4,5 @@ original.npy
 fine_tuned
 tfidf_vectorized.pkl
 tfidf.pkl
+backend/node_modules/
+frontend/node_modules/

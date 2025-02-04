@@ -13,13 +13,14 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 class Model():
     def __init__(self):
-        vectorizer = 'models/tfidf_vectorized.pkl'
-        tfidf_model = 'models/tfidf.pkl'
+        vectorizer = 'tfidf_vectorized.pkl'
+        tfidf_model = 'tfidf.pkl'
+        
         self.lemmatizer = WordNetLemmatizer()
-        if os.path.exists('models/original.npy') and os.path.exists('models/summary.npy'):
-            self.original_summary = np.load('models/original.npy')
-            self.summary = np.load("models/summary.npy")
-
+        
+        if os.path.exists('original.npy') and os.path.exists('summary.npy'):
+            self.original_summary = np.load('original.npy')
+            self.summary = np.load("summary.npy")
         else:
             print("files for training not available locally")
 
@@ -32,7 +33,7 @@ class Model():
             print("Model needs to be trained")
 
     def train(self):
-        if os.path.exists("models/summary.npy") or os.path.exists('models/tfidf_vectorized.pkl') or os.path.exists('models/tfidf.pkl'):
+        if os.path.exists("summary.npy") or os.path.exists('tfidf_vectorized.pkl') or os.path.exists('tfidf.pkl'):
             print("This model has already been trained")
             return None
         
@@ -42,20 +43,20 @@ class Model():
         
         self.summary = [[doc["summary"]] for doc in collection.find()]
         self.original_summary = copy.deepcopy(self.summary)
-        np.save("models/original.npy", self.original_summary)
+        np.save("original.npy", self.original_summary)
         
         for i in range(len(self.summary)):
             self.summary[i] = self.preprocessing(self.summary[i])
         
-        np.save("models/summary.npy", self.summary)
+        np.save("summary.npy", self.summary)
 
-        vectorizer = 'models/tfidf_vectorized.pkl'
-        tfidf_model = 'models/tfidf.pkl'
+        vectorizer = 'tfidf_vectorized.pkl'
+        tfidf_model = 'tfidf.pkl'
         
         self.summary_full = [self.summary[index][0] for index in range(len(self.summary))]
         
-        vectorizer = 'models/tfidf_vectorized.pkl'
-        tfidf_model = 'models/tfidf.pkl'
+        vectorizer = 'tfidf_vectorized.pkl'
+        tfidf_model = 'tfidf.pkl'
         
         self.tfidf_vectorizer = TfidfVectorizer(lowercase=True, stop_words='english')
         self.tfidf_mat = self.tfidf_vectorizer.fit_transform(self.summary_full)
@@ -92,29 +93,29 @@ class Model():
     def predict(self, user_input):
         user_input = self.preprocessing(user_input)
         new_tfidf = self.tfidf_vectorizer.transform(user_input)
+        
         similarities = cosine_similarity(new_tfidf, self.tfidf_mat)
         similarities_np = np.array(similarities[0])
         
         highest = np.argpartition(similarities_np, -5)[-5:]
+
         clean_arr = np.array([[high, similarities_np[high]] for high in highest])
         clean_arr = clean_arr[clean_arr[:,1].argsort()][::-1]
-        print(clean_arr)
+
         client = MongoClient("mongodb://localhost:27017/")
         db = client["Arxiv"]
         collection = db["Arxiv Papers"]
 
         summary_top_5 = np.array(self.original_summary)[highest]
-        print(summary_top_5)
-
+        results = []
+        
         for summarized in summary_top_5:
-            query = {"summary" : summarized[0]}
+            query = {"summary": summarized[0]}
             found = collection.find(query)
             for document in found:
-                print(document['title'], "\n")
+                results.append({
+                    'title': document['title'],
+                    'summary': document['summary']
+                })
 
-
-
-if __name__ == "__main__":
-    model = Model()
-    model.train()
-    model.predict(['model'])
+        return results 
