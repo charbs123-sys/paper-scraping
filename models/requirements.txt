@@ -1,4 +1,0 @@
-pymongo
-sklearn
-numpy
-pickle
