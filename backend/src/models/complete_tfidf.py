@@ -15,10 +15,14 @@ class Model():
     def __init__(self):
         vectorizer = 'tfidf_vectorized.pkl'
         tfidf_model = 'tfidf.pkl'
-        self.original_summary = np.load('original.npy')
-        self.summary = np.load("summary.npy")
+        
         self.lemmatizer = WordNetLemmatizer()
-        self.summary_full = [self.summary[index][0] for index in range(len(self.summary))]
+        
+        if os.path.exists('original.npy') and os.path.exists('summary.npy'):
+            self.original_summary = np.load('original.npy')
+            self.summary = np.load("summary.npy")
+        else:
+            print("files for training not available locally")
 
         if os.path.exists(vectorizer) and os.path.exists(tfidf_model):
             with open(vectorizer, "rb") as f:
@@ -29,7 +33,7 @@ class Model():
             print("Model needs to be trained")
 
     def train(self):
-        if os.path.exists("summary.npy"):
+        if os.path.exists("summary.npy") or os.path.exists('tfidf_vectorized.pkl') or os.path.exists('tfidf.pkl'):
             print("This model has already been trained")
             return None
         
@@ -37,24 +41,29 @@ class Model():
         db = client["Arxiv"]
         collection = db["Arxiv Papers"]
         
-        summary = [[doc["summary"]] for doc in collection.find()]
-        original_summary = copy.deepcopy(summary)
-        np.save("original.npy", original_summary)
+        self.summary = [[doc["summary"]] for doc in collection.find()]
+        self.original_summary = copy.deepcopy(self.summary)
+        np.save("original.npy", self.original_summary)
         
-        for i in range(len(summary)):
-            summary[i] = self.preprocessing(summary[i])
+        for i in range(len(self.summary)):
+            self.summary[i] = self.preprocessing(self.summary[i])
         
-        np.save("summary.npy", summary)
+        np.save("summary.npy", self.summary)
 
         vectorizer = 'tfidf_vectorized.pkl'
         tfidf_model = 'tfidf.pkl'
-
-        tfidf_vectorizer = TfidfVectorizer(lowercase=True, stop_words='english')
-        tfidf_mat = tfidf_vectorizer.fit_transform(self.summary_full)
+        
+        self.summary_full = [self.summary[index][0] for index in range(len(self.summary))]
+        
+        vectorizer = 'tfidf_vectorized.pkl'
+        tfidf_model = 'tfidf.pkl'
+        
+        self.tfidf_vectorizer = TfidfVectorizer(lowercase=True, stop_words='english')
+        self.tfidf_mat = self.tfidf_vectorizer.fit_transform(self.summary_full)
         with open(vectorizer, "wb") as f:
-            pickle.dump(tfidf_vectorizer, f)
+            pickle.dump(self.tfidf_vectorizer, f)
         with open(tfidf_model, "wb") as f:
-            pickle.dump(tfidf_mat, f)
+            pickle.dump(self.tfidf_mat, f)
         print("saved to cache")
 
     def get_wordnet_pos(self, treebank_tag):
@@ -81,36 +90,32 @@ class Model():
         return [" ".join(lemmatized_tokens)]
 
         
-def predict(self, user_input):
-    user_input = self.preprocessing(user_input)
-    new_tfidf = self.tfidf_vectorizer.transform(user_input)
+    def predict(self, user_input):
+        user_input = self.preprocessing(user_input)
+        new_tfidf = self.tfidf_vectorizer.transform(user_input)
+        
+        similarities = cosine_similarity(new_tfidf, self.tfidf_mat)
+        similarities_np = np.array(similarities[0])
+        
+        highest = np.argpartition(similarities_np, -5)[-5:]
 
-    similarities = cosine_similarity(new_tfidf, self.tfidf_mat)
-    similarities_np = np.array(similarities[0])
+        clean_arr = np.array([[high, similarities_np[high]] for high in highest])
+        clean_arr = clean_arr[clean_arr[:,1].argsort()][::-1]
 
-    highest = np.argpartition(similarities_np, -5)[-5:]
-    clean_arr = np.array([[high, similarities_np[high]] for high in highest])
-    clean_arr = clean_arr[clean_arr[:, 1].argsort()][::-1]
+        client = MongoClient("mongodb://localhost:27017/")
+        db = client["Arxiv"]
+        collection = db["Arxiv Papers"]
 
-    client = MongoClient("mongodb://localhost:27017/")
-    db = client["Arxiv"]
-    collection = db["Arxiv Papers"]
+        summary_top_5 = np.array(self.original_summary)[highest]
+        results = []
+        
+        for summarized in summary_top_5:
+            query = {"summary": summarized[0]}
+            found = collection.find(query)
+            for document in found:
+                results.append({
+                    'title': document['title'],
+                    'summary': document['summary']
+                })
 
-    summary_top_5 = np.array(self.original_summary)[highest]
-    results = []
-
-    for summarized in summary_top_5:
-        query = {"summary": summarized[0]}
-        found = collection.find(query)
-        for document in found:
-            results.append({
-                'title': document['title'],
-                'summary': document['summary']
-            })
-
-    return results 
-
-if __name__ == "__main__":
-    model = Model()
-    model.train()
-    model.predict(["machine!!"])
+        return results 

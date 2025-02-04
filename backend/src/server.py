@@ -18,10 +18,12 @@ def recommend_papers():
     user_input = request.args.get('query')
     if not user_input:
         return jsonify({'error': 'Query parameter is required'}), 400
-    
+    print([user_input])
     recommendations = model.predict([user_input])
     return jsonify({'results' : recommendations})
 
 
 if __name__ == '__main__':
+    model.train()
     app.run(port=5000, debug=True, host='0.0.0.0')
+    

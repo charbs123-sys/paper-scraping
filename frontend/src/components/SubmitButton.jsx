@@ -6,13 +6,12 @@ const SubmitButton = ({ onClick }) => (
     variant="contained"
     color="secondary"
     sx={{
-      position: 'fixed',  // Change to fixed
-      top: '53%',         // Adjust vertical positioning (can use px or %)
-      left: '50%',        // Center horizontally
-      transform: 'translateX(-50%)',  // Ensure it's centered horizontally
+      position: 'relative',     // Keeps the button fixed in the viewport
+      bottom: '175px',        // Positions it 20px from the bottom
+      left: '1500px',         // Positions it 20px from the right
       padding: '12px 24px',
       fontSize: '16px',
-      zIndex: 999,        // Ensures it stays on top of other elements
+      borderRadius: '500px',   // Optional: adds rounded corners
     }}
   >
     Submit

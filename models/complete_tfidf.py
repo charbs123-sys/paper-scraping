@@ -19,7 +19,7 @@ class Model():
         if os.path.exists('models/original.npy') and os.path.exists('models/summary.npy'):
             self.original_summary = np.load('models/original.npy')
             self.summary = np.load("models/summary.npy")
-            self.summary_full = [self.summary[index][0] for index in range(len(self.summary))]
+
         else:
             print("files for training not available locally")
 
@@ -51,9 +51,12 @@ class Model():
 
         vectorizer = 'models/tfidf_vectorized.pkl'
         tfidf_model = 'models/tfidf.pkl'
-        self.summary_full = np.load("models/summary.npy")
+        
+        self.summary_full = [self.summary[index][0] for index in range(len(self.summary))]
+        
         vectorizer = 'models/tfidf_vectorized.pkl'
         tfidf_model = 'models/tfidf.pkl'
+        
         self.tfidf_vectorizer = TfidfVectorizer(lowercase=True, stop_words='english')
         self.tfidf_mat = self.tfidf_vectorizer.fit_transform(self.summary_full)
         with open(vectorizer, "wb") as f:

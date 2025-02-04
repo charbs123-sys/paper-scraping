@@ -1,13 +1,11 @@
 import { TextField, Typography, Box } from '@mui/material';
-import { useState } from 'react';
 
-const InputField = () => {
-  const [text, setText] = useState("");
+const InputField = ({ text, setText }) => {
   const maxLength = 1000;
 
   const handleChange = (e) => {
     if (e.target.value.length <= maxLength) {
-      setText(e.target.value);
+      setText(e.target.value); // Update the text state in the parent
     }
   };
 
