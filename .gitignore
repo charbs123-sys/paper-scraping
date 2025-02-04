@@ -1,6 +1,6 @@
 __pycache__
 summary.npy
 original.npy
+fine_tuned
 tfidf_vectorized.pkl
 tfidf.pkl
-fine_tuned
