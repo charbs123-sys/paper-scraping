@@ -94,16 +94,17 @@ class Model():
         new_tfidf = self.tfidf_vectorizer.transform(user_input)
         similarities = cosine_similarity(new_tfidf, self.tfidf_mat)
         similarities_np = np.array(similarities[0])
-        highest = np.argpartition(similarities_np, -5)[-5:]
         
+        highest = np.argpartition(similarities_np, -5)[-5:]
         clean_arr = np.array([[high, similarities_np[high]] for high in highest])
         clean_arr = clean_arr[clean_arr[:,1].argsort()][::-1]
-
+        print(clean_arr)
         client = MongoClient("mongodb://localhost:27017/")
         db = client["Arxiv"]
         collection = db["Arxiv Papers"]
 
         summary_top_5 = np.array(self.original_summary)[highest]
+        print(summary_top_5)
 
         for summarized in summary_top_5:
             query = {"summary" : summarized[0]}
@@ -116,4 +117,4 @@ class Model():
 if __name__ == "__main__":
     model = Model()
     model.train()
-    model.predict(["complex"])
+    model.predict(['model'])
