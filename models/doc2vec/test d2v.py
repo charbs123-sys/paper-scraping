@@ -33,7 +33,7 @@ def preprocessing(summaries):
     return [" ".join(lemmatized_tokens)]
 
 model = Doc2Vec.load("d2v.model")
-user_input = "complex number"
+user_input = "vector"
 user_input = preprocessing([user_input])
 test_data = word_tokenize(user_input[0])
 v1 = model.infer_vector(test_data, epochs = 50)
