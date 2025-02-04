@@ -1,0 +1,12 @@
+.centered-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  
+  .centered-container input, .centered-container button {
+    margin: 10px;
+  }
+  
