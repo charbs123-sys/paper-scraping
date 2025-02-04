@@ -51,11 +51,14 @@ class Model():
 
         vectorizer = 'models/tfidf_vectorized.pkl'
         tfidf_model = 'models/tfidf.pkl'
-        self.summary_full = np.load("models/summary.npy")
+
+        self.summary_full = [self.summary[index][0] for index in range(len(self.summary))]
         vectorizer = 'models/tfidf_vectorized.pkl'
         tfidf_model = 'models/tfidf.pkl'
+
         self.tfidf_vectorizer = TfidfVectorizer(lowercase=True, stop_words='english')
         self.tfidf_mat = self.tfidf_vectorizer.fit_transform(self.summary_full)
+
         with open(vectorizer, "wb") as f:
             pickle.dump(self.tfidf_vectorizer, f)
         with open(tfidf_model, "wb") as f:
