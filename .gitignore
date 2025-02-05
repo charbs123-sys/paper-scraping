@@ -6,3 +6,4 @@ tfidf_vectorized.pkl
 tfidf.pkl
 backend/node_modules/
 frontend/node_modules/
+d2v.model
