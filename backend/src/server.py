@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
-from models.complete_tfidf import Model
+from models.complete_tfidf import Model 
 from models.complete_d2v import Model as Model2
 
 app = Flask(__name__)
@@ -23,7 +23,7 @@ def recommend_papers():
     
     if not user_query:
         return jsonify({'error': 'Query parameter is required'}), 400
-    print(user_query)
+    print([user_query])
     print(model_option)
     print(dm_option)
     
@@ -31,13 +31,13 @@ def recommend_papers():
         recommendations = model.predict([user_query])
         return jsonify({'results' : recommendations})
     elif model_option == 'model2':
-        model2.train(dm=dm_option)
-        recommendations = model2.test(user_query)
+        recommendations = model2.test(user_query, dm_option)
         return jsonify({'results' : recommendations})
 
 
 if __name__ == '__main__':
     model.train()
     model2.train()
+    model2.train(dm=1)
     app.run(port=5000, debug=True, host='0.0.0.0')
     

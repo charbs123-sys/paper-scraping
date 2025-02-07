@@ -20,9 +20,22 @@ const InputField = ({ text, setText }) => {
         rows={12}
         fullWidth
         sx={{
-          '& .MuiInputBase-root': { position: 'relative' },
-          '& .MuiOutlinedInput-root': { paddingBottom: 0 },
-          '& .MuiInputBase-input': { fontSize: '18px' },
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: '#000', // Darker outline color
+              borderWidth: '2px', // Thicker outline
+            },
+            '&:hover fieldset': {
+              borderColor: '#333', // Slightly lighter on hover
+            },
+            '&.Mui-focused fieldset': {
+              borderColor:'rgb(0, 128, 255)', // Highlight color when focused
+              borderWidth: '3px', // Even thicker when focused
+            },
+          },
+          '& .MuiInputBase-input': {
+            fontSize: '18px',
+          },
         }}
       />
       <Typography 

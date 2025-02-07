@@ -1,7 +1,7 @@
 import { Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
 const Message = ({ message }) => {
-  if (!Array.isArray(message)) {
+  if (message && !Array.isArray(message)) {
     return (
       <Typography variant="h6" align="center" color="error" sx={{ mt: 4 }}>
         Error: Failed to retrieve recommendations.
@@ -12,7 +12,6 @@ const Message = ({ message }) => {
   if (message.length === 0) {
     return (
       <Typography variant="h6" align="center" color="textSecondary" sx={{ mt: 4 }}>
-        No recommendations yet.
       </Typography>
     );
   }

@@ -5,6 +5,7 @@ import InputField from "../components/InputField";
 import SubmitButton from "../components/SubmitButton";
 import Message from "../components/Message";
 import ModelToggle from "../components/ModelToggle";
+import HelpTooltip from "../components/HelpTooltip";
 import { Box } from "@mui/material";
 
 const MainPage = () => {
@@ -40,6 +41,7 @@ const MainPage = () => {
       <ModelToggle model={model} setModel={setModel} option={option} setOption={setOption} />
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 4 }}>
         <InputField text={text} setText={setText} />
+        <HelpTooltip /> 
         <SubmitButton onClick={handleSubmit} />
       </Box>
 
