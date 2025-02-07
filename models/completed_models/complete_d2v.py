@@ -68,24 +68,36 @@ class Model():
         np.save("summary.npy", self.summary)
 
     def train(self, vec_size = 200, alpha = 0.025, min_alpha = 0.00025, min_count = 1, max_epochs = 100, dm = 0):
-        if os.path.exists("d2v.model"):
-            print("Model already trained")
+        if dm == 0 and os.path.exists("d2v0.model"):
+            print("Model dm = 0 already trained")
             return None
+        elif dm == 1 and os.path.exists("d2v1.model"):
+            print("Model dm = 1 already trained")
+            return None
+        else:
+            print("Training models")
         
         self.model = Doc2Vec(vector_size = vec_size, alpha = alpha, min_alpha = min_alpha, min_count = min_count, dm = dm, epochs = max_epochs)
         self.model.build_vocab(self.tagged_data)
         self.model.train(self.tagged_data, total_examples = self.model.corpus_count, epochs = 100)
-        self.model.save("d2v.model")
+        
+        if dm == 0:
+            self.model.save("d2v0.model")
+        else:
+            self.model.save("d2v1.model")
 
         print("Model Saved")
     
-    def test(self, user_input):
+    def test(self, user_input, dm):
         
         client = MongoClient("mongodb://localhost:27017/")
         db = client["Arxiv"]
         collection = db["Arxiv Papers"]
 
-        model = Doc2Vec.load("d2v.model")
+        if dm == 0:
+            model = Doc2Vec.load("d2v0.model")
+        else:
+            model = Doc2Vec.load("d2v1.model")
         
         user_input = self.preprocessing([user_input])
         test_data = word_tokenize(user_input[0])
