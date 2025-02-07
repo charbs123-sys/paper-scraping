@@ -5,12 +5,12 @@ const InputField = ({ text, setText }) => {
 
   const handleChange = (e) => {
     if (e.target.value.length <= maxLength) {
-      setText(e.target.value); // Update the text state in the parent
+      setText(e.target.value);
     }
   };
 
   return (
-    <Box sx={{ position: 'relative', width: '55%', margin: '0 auto', mt: 4 }}>
+    <Box sx={{ position: 'relative', width: '60%', mt: 2 }}>
       <TextField
         value={text}
         onChange={handleChange}
@@ -20,15 +20,9 @@ const InputField = ({ text, setText }) => {
         rows={12}
         fullWidth
         sx={{
-          '& .MuiInputBase-root': {
-            position: 'relative',
-          },
-          '& .MuiOutlinedInput-root': {
-            paddingBottom: 0,
-          },
-          '& .MuiInputBase-input': {
-            fontSize: '18px',
-          },
+          '& .MuiInputBase-root': { position: 'relative' },
+          '& .MuiOutlinedInput-root': { paddingBottom: 0 },
+          '& .MuiInputBase-input': { fontSize: '18px' },
         }}
       />
       <Typography 

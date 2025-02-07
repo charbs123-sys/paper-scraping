@@ -1,21 +1,22 @@
-import { Button } from '@mui/material';
+import { Button, Box } from '@mui/material';
 
 const SubmitButton = ({ onClick }) => (
-  <Button
-    onClick={onClick}
-    variant="contained"
-    color="secondary"
-    sx={{
-      position: 'relative',     // Keeps the button fixed in the viewport
-      bottom: '175px',        // Positions it 20px from the bottom
-      left: '1500px',         // Positions it 20px from the right
-      padding: '12px 24px',
-      fontSize: '16px',
-      borderRadius: '500px',   // Optional: adds rounded corners
-    }}
-  >
-    Submit
-  </Button>
+  <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <Button
+      onClick={onClick}
+      variant="contained"
+      color="secondary"
+      sx={{
+        height: "48px",          // Match input field height
+        ml: 2,                   // Add some margin to separate from the text field
+        padding: "12px 24px",
+        fontSize: "16px",
+        borderRadius: "500px",    // Optional: adds rounded corners
+      }}
+    >
+      Submit
+    </Button>
+  </Box>
 );
 
 export default SubmitButton;
